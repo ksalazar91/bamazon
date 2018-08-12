@@ -18,6 +18,8 @@
   "homepage": "https://github.com/ksalazar91/bamazon#readme",
   "dependencies": {
     "console.table": "^0.10.0",
-    "mysql": "^2.16.0"
+    "inquirer": "^6.1.0",
+    "mysql": "^2.16.0",
+    "prompt-base": "^5.0.0"
   }
 }

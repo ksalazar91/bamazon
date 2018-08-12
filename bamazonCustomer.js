@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 const cTable = require('console.table');
+var inquirer = require("inquirer");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -36,6 +37,33 @@ connection.connect(function(err) {
       console.log("-----------------------------------------------------------------------");
       console.log("");
       
+
+      inquirer
+      .prompt([
+        {
+          name: "id",
+          type: "input",
+          message: "Input Product ID:_ "
+        },
+        {
+          name: "unit",
+          type: "input",
+          message: "Input Product Quantity:_ ",
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
+        }
+      ])
+      .then(function(answer) {
+        console.log(answer.id);
+        console.log(answer.unit);
+        start();
+      });
+ 
+
   }
 
 
