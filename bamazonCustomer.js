@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 const cTable = require('console.table');
 var inquirer = require("inquirer");
+var List = require('prompt-list');
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -27,6 +28,7 @@ connection.connect(function(err) {
   function productsDisplay() {
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
+      console.log("");
       console.table(res);
       //connection.end();
       start();
@@ -60,13 +62,71 @@ connection.connect(function(err) {
       .then(function(answer) {
         console.log(answer.id);
         console.log(answer.unit);
-        start();
+        search(parseInt(answer.id), parseInt(answer.unit));
       });
  
 
   }
 
 
+function search(id, quantity){
+
+  connection.query("SELECT * FROM products WHERE ?", { item_id: id }, function(err, res) {
+    if(err){
+      console.log("An Error Has Ocurr");
+        restart();
+      
+    }
+    else{
+    
+      var stock = parseInt(res[0].stock_quantity);
+
+      if(stock === 0 || stock<quantity) {
+        console.log("Insufficient quantity!")
+        restart();
+      }
+      else if(stock>=quantity){
+        var price = parseInt(res[0].price)*quantity;
+        mysqlUpdate(stock, quantity, id, price);
+      }
+    }
+    
+  });
+
+}
+
+function mysqlUpdate(stock, quantity, id, price){
+  var updateStock = stock - quantity;
+  connection.query('UPDATE products SET stock_quantity = ? WHERE item_id = ?', [updateStock, id], function (error, results, fields) {
+    console.log("Transction is Completed");
+    console.log("Total............. $" + price);
+      setTimeout(function(){
+        restart();
+      },5000);
+  });
+}
 
 
+function restart(){ 
+  console.log('');
+  var list = new List({
+  name: 'input',
+  message: 'Would You like to?',
+  // choices may be defined as an array or a function that returns an array
+  choices: [
+      'New Transaction',
+      'End Transaction'
+  ]
+  });
 
+  list.ask(function(answer) {
+    if(answer === 'New Transaction'){
+      productsDisplay();
+    }
+    else if(answer === 'End Transaction'){
+      connection.end();
+    }
+    
+  });
+
+}
