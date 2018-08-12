@@ -132,4 +132,4 @@ function restart(){
 }
 
 
-//https://ksalazar91.github.io/Responsive-Portfolio/portfolio.html
+//https://ksalazar91.github.io/Portfolio/
